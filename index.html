@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+    
+    /* NAVBAR STYLES */
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(26, 26, 26, 0.9);
+        color: #fff;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s ease-in-out;
+    }
+    
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 48px;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #fff;
+        text-decoration: none;
+    }
+    
+    .navbar-links {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .nav-link {
+        text-decoration: none;
+        color: #fff;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .nav-link::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #6a11cb;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .nav-link:hover::before {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .hamburger .line {
+        width: 25px;
+        height: 3px;
+        background: #fff;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .navbar.active .navbar-links {
+        display: flex;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.9);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .navbar.active .nav-link {
+        padding: 10px 20px;
+        text-align: center;
+    }
+    .profile {
+            cursor: pointer;
+        }
+
+        .profile-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .profile-logo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 280px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+        }
+
+        .modal button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login {
+            background: #3498db;
+            color: white;
+        }
+
+        .signup {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .close {
+            background: #e74c3c;
+            color: white;
+        }
+
+       
+
+        .dashboard {
+            display: flex;
+            width: 100%;
+        }
+        /* Fixed Sidebar */
+.sidebar {
+    width: 250px;
+    background: #333;
+    color: white;
+    padding: 20px;
+    position: fixed; /* Keeps the sidebar fixed */
+    top: 0; /* Aligns it to the top */
+    left: 0; /* Aligns it to the left */
+    height: 100vh; /* Full height */
+    overflow-y: auto; /* Adds scrolling if content overflows */
+}
+
+/* Sidebar Header */
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Sidebar List */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    font-size: large;
+}
+
+/* Sidebar List Items */
+.sidebar ul li {
+    margin: 40px 0;
+}
+
+/* Sidebar Links */
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    padding: 10px;
+}
+
+/* Content Section */
+.content {
+    margin-left: 270px; /* Ensures content is not hidden behind the sidebar */
+    padding: 20px;
+}
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            margin-top: 50px;
+        }
+        .cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            flex: 1;
+            background: white;
+            padding: 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+                .chart-container 
+                { width: 100%;
+                    max-width: 1200px;
+                    background: white;
+                    padding: 40px; 
+                    border-radius: 12px;
+                    margin-top: 20px; 
+                }
+
+        .input-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .input-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100px;
+            text-align: center;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+    /* Responsive Navbar */       
+            .navbar-links {
+        display: none;
+        }
+    
+        .hamburger {
+        display: flex;
+        }
+    
+        .navbar.active .navbar-links {
+        display: flex;
+        }
+    
+        .navbar.active .line:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+        }
+    
+        .navbar.active .line:nth-child(2) {
+        opacity: 0;
+        }
+    
+        .navbar.active .line:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+        }
+           
+           
+            .dashboard {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                text-align: center;
+            }
+            .sidebar ul {
+                display: flex;
+                justify-content: space-around;
+                padding: 0;
+            }
+            .sidebar ul li {
+                margin: 0;
+            }
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .profile {
+                padding: 15px;
+            }
+
+            .profile-logo {
+                width: 60px;
+                height: 60px;
+            }
+            .modal-content {
+                width: 80%;
+            }   
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+        <a href="#" class="logo">Tech Hub</a>
+        <button class="hamburger" aria-label="Toggle navigation">
+            <span class="line"></span>
+            <span class="line"></span>
+            <span class="line"></span>
+        </button>
+        <!-- <div class="navbar-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="#" class="nav-link">About Us</a>
+            <a href="#" class="nav-link">Our Website</a>
+            <a href="#" class="nav-link">Contact</a>
+        </div> -->
+       <!-- Profile Section -->
+    <div class="profile" id="profile">
+        <img src="images/user.png" alt="Profile Logo" class="profile-logo">
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Welcome</h2>
+            <button class="login" onclick="alert('Login Clicked')">Login</button>
+            <button class="signup" onclick="alert('Sign Up Clicked')">Sign Up</button>
+            <button class="close" id="closeBtn">Close</button>
+        </div>
+    </div>
+        </div>
+       
+    </nav>
+
+    <div class="dashboard">
+       
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#barChart"><i class="fas fa-chart-bar"></i> Graphs</a></li>
+                <li><a href="#lineChart"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>   
+        </nav>
+
+            
+        <main class="content">
+        <h1 style="text-align: center;">"Tech Hub - <span style="color: blue;">Mobile Accessories</span> Dashboard"</h1>
+      <br>  <p style="text-align: center;">A business analytics dashboard for tracking users, revenue, orders, 
+            and graphical insights for mobile accessories.</p>
+        <br>
+        <div class="cards">
+            <div class="card" style="background-color: #4CAF50; color: white;">
+                <h3>Users</h3>
+                <p id="users-count">500</p>
+            </div>
+            <div class="card" style="background-color: #2196F3; color: white;">
+                <h3>Revenue</h3>
+                <p id="revenue-count">$25,000</p>
+            </div>
+            <div class="card" style="background-color: #FF9800; color: white;">
+                <h3>Orders</h3>
+                <p id="orders-count">1200</p>
+            </div>
+        </div>
+            <div class="input-container">
+                <input type="number" id="userInput" placeholder="Users">
+                <input type="number" id="revenueInput" placeholder="Revenue">
+                <input type="number" id="ordersInput" placeholder="Orders">
+                <button onclick="updateGraph()">Update</button>
+            </div>
+            <div class="chart-container"><canvas id="barChart"></canvas></div>
+            <h1>Graph:</h1>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
+            <h1>Analytics:</h1>
+        <div class="chart-container"><canvas id="lineChart"></canvas></div>
+        </main>
+    </div>
+    <script>
+        function createChart(ctx, type, labels, data, colors) {
+            return new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Dashboard Data',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.6', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        const labels = ['Users', 'Revenue', 'Orders'];
+        const initialData = [500, 25000, 1200];
+        const colors = ['#4CAF50', '#2196F3', '#FF9800'];
+
+        const barChart = createChart(document.getElementById('barChart').getContext('2d'), 'bar', labels, initialData, colors);
+        const pieChart = createChart(document.getElementById('pieChart').getContext('2d'), 'pie', labels, initialData, colors);
+        const lineChart = createChart(document.getElementById('lineChart').getContext('2d'), 'line', labels, initialData, colors);
+
+        function updateGraph() {
+            let userVal = document.getElementById('userInput').value || 0;
+            let revenueVal = document.getElementById('revenueInput').value || 0;
+            let ordersVal = document.getElementById('ordersInput').value || 0;
+            
+            document.getElementById('users-count').textContent = userVal;
+            document.getElementById('revenue-count').textContent = `$${revenueVal}`;
+            document.getElementById('orders-count').textContent = ordersVal;
+            
+            let newData = [userVal, revenueVal, ordersVal];
+            barChart.data.datasets[0].data = newData;
+            pieChart.data.datasets[0].data = newData;
+            lineChart.data.datasets[0].data = newData;
+            barChart.update();
+            pieChart.update();
+            lineChart.update();
+        }
+    </script>
+    <script>
+        const profile = document.getElementById("profile");
+        const modal = document.getElementById("modal");
+        const closeBtn = document.getElementById("closeBtn");
+
+        // Open Modal when clicking profile
+        profile.addEventListener("click", () => {
+            modal.style.display = "flex";
+        });
+
+        // Close Modal when clicking close button
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // Close Modal when clicking outside modal content
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
